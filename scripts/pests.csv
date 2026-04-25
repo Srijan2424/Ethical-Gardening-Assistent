@@ -1,0 +1,79 @@
+plant,pest,solution
+rice,stem borer,Use pheromone traps
+rice,brown planthopper,Use resistant varieties
+rice,leaf folder,Apply neem-based pesticides
+rice,gall midge,Use insecticides
+
+maize,stem borer,Use biological control agents
+maize,fall armyworm,Apply neem oil or insecticide
+maize,cutworm,Use soil treatment
+
+chickpea,pod borer,Use pheromone traps
+chickpea,aphids,Use neem oil spray
+chickpea,cutworm,Apply insecticide
+
+kidneybeans,aphids,Use insecticidal soap
+kidneybeans,whiteflies,Use sticky traps
+kidneybeans,bean beetle,Manual removal
+
+pigeonpeas,pod borer,Use pheromone traps
+pigeonpeas,aphids,Use neem oil
+pigeonpeas,thrips,Use insecticides
+
+mothbeans,aphids,Use neem oil
+mothbeans,jassids,Use insecticide spray
+
+mungbean,whiteflies,Use sticky traps
+mungbean,aphids,Use neem oil
+mungbean,thrips,Use insecticide
+
+blackgram,leaf hopper,Use resistant seeds
+blackgram,aphids,Use neem oil
+blackgram,whiteflies,Use traps
+
+lentil,aphids,Use neem oil
+lentil,pod borer,Use pheromone traps
+
+pomegranate,fruit borer,Use pheromone traps
+pomegranate,aphids,Use neem oil
+pomegranate,mealybugs,Use biological control
+
+banana,pseudostem borer,Remove infected plants
+banana,aphids,Use neem oil
+banana,nematodes,Use soil treatment
+
+mango,fruit fly,Use traps
+mango,hopper,Use insecticide spray
+mango,mealybugs,Apply neem oil
+
+grapes,thrips,Use insecticide spray
+grapes,mealybugs,Use biological control
+grapes,leafhopper,Use neem oil
+
+watermelon,aphids,Use neem oil
+watermelon,fruit fly,Use traps
+watermelon,whiteflies,Use sticky traps
+
+muskmelon,aphids,Use neem oil
+muskmelon,fruit fly,Use traps
+muskmelon,leaf miner,Use insecticide
+
+apple,apple scab,Apply fungicide
+apple,codling moth,Use traps
+apple,aphids,Use neem oil
+
+orange,citrus psylla,Use insecticide
+orange,aphids,Use neem oil
+orange,leaf miner,Use biological control
+
+papaya,fruit fly,Use traps
+papaya,aphids,Use neem oil
+papaya,mites,Use miticide
+
+coconut,rhinoceros beetle,Use biological control
+coconut,red palm weevil,Use pheromone traps
+coconut,mites,Use neem oil
+
+cotton,bollworm,Use Bt cotton or insecticides
+cotton,whiteflies,Use sticky traps
+cotton,aphids,Use neem oil
