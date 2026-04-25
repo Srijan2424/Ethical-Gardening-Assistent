@@ -5,3 +5,6 @@ kagglehub
 fastapi
 uvicorn
 requests
+passlib[bcrypt]
+python-dotenv
+od

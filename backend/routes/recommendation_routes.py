@@ -5,12 +5,14 @@ import os
 
 router = APIRouter()
 
-# 🔑 Replace with your OpenWeather API key
-API_KEY = os.getenv("WEATHER_API_KEY")
-
 
 @router.get("/recommendations/{user_id}")
 def get_recommendations(user_id: int):
+
+    # ✅ ALWAYS GET API KEY INSIDE FUNCTION
+    API_KEY = os.getenv("WEATHER_API_KEY")
+    print("🔑 API KEY:", API_KEY)
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -22,47 +24,59 @@ def get_recommendations(user_id: int):
         return {"error": "User not found"}
 
     city = user["city"]
+    print("🌍 Fetching weather for:", city)
 
-    # 🌦 FETCH CURRENT + FORECAST
+    # 🌦 DEFAULT WEATHER
+    weather = {
+        "temperature": None,
+        "humidity": None,
+        "condition": "Unavailable"
+    }
+
+    forecast = []
+
     try:
-        # 🌤 CURRENT WEATHER
-        weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
-        current_res = requests.get(weather_url).json()
+        if not API_KEY:
+            raise Exception("Missing API key")
 
-        weather = {
-            "temperature": current_res["main"]["temp"],
-            "humidity": current_res["main"]["humidity"],
-            "condition": current_res["weather"][0]["main"]
-        }
+        # ✅ ADD COUNTRY CODE FOR RELIABILITY
+        weather_url = f"https://api.openweathermap.org/data/2.5/weather?q={city},IN&appid={API_KEY}&units=metric"
+        current_res = requests.get(weather_url, timeout=5).json()
 
-        # 📅 FORECAST (5 days)
-        forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={API_KEY}&units=metric"
-        forecast_res = requests.get(forecast_url).json()
+        print("🌦 WEATHER RAW:", current_res)
 
-        forecast = []
+        # ✅ SAFE PARSING
+        if current_res.get("cod") == 200:
+            weather = {
+                "temperature": current_res["main"]["temp"],
+                "humidity": current_res["main"]["humidity"],
+                "condition": current_res["weather"][0]["main"]
+            }
+        else:
+            print("❌ WEATHER ERROR:", current_res)
 
-        # every 24 hours (8 entries per day)
-        for i in range(0, len(forecast_res["list"]), 8):
-            item = forecast_res["list"][i]
+        # 📅 FORECAST
+        forecast_url = f"https://api.openweathermap.org/data/2.5/forecast?q={city},IN&appid={API_KEY}&units=metric"
+        forecast_res = requests.get(forecast_url, timeout=5).json()
 
-            forecast.append({
-                "day": item["dt_txt"].split(" ")[0],  # YYYY-MM-DD
-                "temp": item["main"]["temp"],
-                "condition": item["weather"][0]["main"]
-            })
+        print("📅 FORECAST RAW:", forecast_res)
+
+        if forecast_res.get("cod") == "200":
+            for i in range(0, len(forecast_res["list"]), 8):
+                item = forecast_res["list"][i]
+
+                forecast.append({
+                    "day": item["dt_txt"].split(" ")[0],
+                    "temp": item["main"]["temp"],
+                    "condition": item["weather"][0]["main"]
+                })
+        else:
+            print("❌ FORECAST ERROR:", forecast_res)
 
     except Exception as e:
-        print("Weather API error:", e)
+        print("❌ Weather API error:", e)
 
-        weather = {
-            "temperature": None,
-            "humidity": None,
-            "condition": "Unavailable"
-        }
-
-        forecast = []  # fallback safe
-
-    # 🌱 RECOMMENDATION LOGIC
+    # 🌱 GET PLANTS
     cursor.execute("""
         SELECT * FROM plants
         WHERE care_level = ?
@@ -85,7 +99,7 @@ def get_recommendations(user_id: int):
                 advice = "Perfect weather for this plant"
 
         recommendations.append({
-            "plant_id": plant["id"],   # 🔥 ADD THIS
+            "plant_id": plant["id"],   # ✅ REQUIRED FOR FRONTEND
             "plant": plant["name"],
             "advice": advice
         })
@@ -93,10 +107,10 @@ def get_recommendations(user_id: int):
     conn.close()
 
     return {
-    "name": user["name"],  
-    "city": city,
-    "weather": weather,
-    "forecast": forecast,   # if you already added forecast
-    "recommendations": recommendations,
-    "user_watering_time": user["watering_time"]
-}
+        "name": user["name"],
+        "city": city,
+        "weather": weather,
+        "forecast": forecast,
+        "recommendations": recommendations,
+        "user_watering_time": user["watering_time"]
+    }

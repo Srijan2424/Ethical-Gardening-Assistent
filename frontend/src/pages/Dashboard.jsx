@@ -19,18 +19,14 @@ export default function Dashboard() {
 
   // 📡 FETCH
   useEffect(() => {
-    api.getRecommendations(userId).then((res) => {
-      setData({
-        name: res?.name || "Gardener",
-        city: res?.city || "Your City",
-        weather: res?.weather || {},
-        forecast: res?.forecast || [],
-        recommendations: res?.recommendations || [],
-        user_watering_time: res?.user_watering_time || "morning"
-      });
-    });
-
-    api.getUserPlants(userId).then(setUserPlants);
+  api.getRecommendations(userId)
+      .then(res => {
+        console.log("🔥 FULL API RESPONSE:", res);
+        console.log("🌦 WEATHER:", res.weather);
+        console.log("📅 FORECAST:", res.forecast);
+        setData(res);
+      })
+      .catch(err => console.error("❌ API ERROR:", err));
   }, []);
 
   // 🌤 ICONS

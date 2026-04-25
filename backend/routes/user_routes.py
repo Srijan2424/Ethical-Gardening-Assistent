@@ -4,21 +4,19 @@ from passlib.hash import bcrypt
 
 router = APIRouter()
 
+
 # 🔍 CHECK USER
 @router.post("/check-user")
 def check_user(data: dict):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users WHERE email = ?", (data["email"],))
+    cursor.execute("SELECT * FROM users WHERE email = ?", (data.get("email"),))
     user = cursor.fetchone()
 
     conn.close()
 
-    if user and user["password"]:
-        return {"exists": True}
-    else:
-        return {"exists": False}
+    return {"exists": bool(user and user["password"])}
 
 
 # 🔐 LOGIN
@@ -27,18 +25,18 @@ def login(data: dict):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users WHERE email = ?", (data["email"],))
+    cursor.execute("SELECT * FROM users WHERE email = ?", (data.get("email"),))
     user = cursor.fetchone()
 
     conn.close()
 
-    if user and bcrypt.verify(data["password"], user["password"]):
+    if user and bcrypt.verify(data.get("password", ""), user["password"]):
         return {"user_id": user["id"]}
 
     return {"error": "Invalid credentials"}
 
 
-# 🆕 REGISTER (ONBOARDING)
+# 🆕 REGISTER
 @router.post("/register")
 def register(data: dict):
     conn = get_connection()
@@ -65,7 +63,7 @@ def register(data: dict):
     return {"user_id": user_id}
 
 
-# 🌱 GET USER PLANTS (FOR GARDEN)
+# 🌱 GET USER PLANTS
 @router.get("/user-plants/{user_id}")
 def get_user_plants(user_id: int):
     conn = get_connection()
@@ -81,87 +79,104 @@ def get_user_plants(user_id: int):
     plants = cursor.fetchall()
     conn.close()
 
-    # Convert rows to dict
     return [dict(p) for p in plants]
 
 
-# ➕ ADD PLANT (NO DUPLICATES)
+# ➕ ADD PLANT (FIXED SAFE)
 @router.post("/user-plants")
 def add_plant(data: dict):
-    conn = get_connection()
-    cursor = conn.cursor()
+    try:
+        user_id = data.get("user_id")
+        plant_id = data.get("plant_id")
 
-    cursor.execute("""
-        INSERT INTO user_plants (user_id, plant_id)
-        SELECT ?, ?
-        WHERE NOT EXISTS (
-            SELECT 1 FROM user_plants
-            WHERE user_id = ? AND plant_id = ?
-        )
-    """, (
-        data["user_id"],
-        data["plant_id"],
-        data["user_id"],
-        data["plant_id"]
-    ))
+        if not user_id or not plant_id:
+            return {"error": "Missing user_id or plant_id"}
 
-    conn.commit()
-    conn.close()
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    return {"message": "Plant added"}
+        cursor.execute("""
+            INSERT INTO user_plants (user_id, plant_id)
+            SELECT ?, ?
+            WHERE NOT EXISTS (
+                SELECT 1 FROM user_plants
+                WHERE user_id = ? AND plant_id = ?
+            )
+        """, (user_id, plant_id, user_id, plant_id))
+
+        conn.commit()
+        conn.close()
+
+        return {"message": "Plant added"}
+
+    except Exception as e:
+        print("Add plant error:", e)
+        return {"error": "Failed to add plant"}
 
 
-# ❌ REMOVE PLANT (NEW)
+# ❌ REMOVE PLANT
 @router.delete("/user-plants")
 def remove_plant(data: dict):
-    conn = get_connection()
-    cursor = conn.cursor()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        DELETE FROM user_plants
-        WHERE user_id = ? AND plant_id = ?
-    """, (data["user_id"], data["plant_id"]))
+        cursor.execute("""
+            DELETE FROM user_plants
+            WHERE user_id = ? AND plant_id = ?
+        """, (data.get("user_id"), data.get("plant_id")))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
-    return {"message": "Plant removed"}
+        return {"message": "Plant removed"}
+
+    except Exception as e:
+        print("Remove plant error:", e)
+        return {"error": "Failed to remove plant"}
+
+
 # 📄 GET USER DETAILS
 @router.get("/user/{user_id}")
 def get_user(user_id: int):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, name, email, city, watering_time, care_level FROM users WHERE id = ?", (user_id,))
-    user = cursor.fetchone()
+    cursor.execute("""
+        SELECT id, name, email, city, watering_time, care_level 
+        FROM users WHERE id = ?
+    """, (user_id,))
 
+    user = cursor.fetchone()
     conn.close()
 
-    if user:
-        return dict(user)
-
-    return {"error": "User not found"}
+    return dict(user) if user else {"error": "User not found"}
 
 
-# ✏️ UPDATE USER DETAILS
+# ✏️ UPDATE USER
 @router.put("/user/{user_id}")
 def update_user(user_id: int, data: dict):
-    conn = get_connection()
-    cursor = conn.cursor()
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
 
-    cursor.execute("""
-        UPDATE users
-        SET name=?, city=?, watering_time=?, care_level=?
-        WHERE id=?
-    """, (
-        data["name"],
-        data["city"],
-        data["watering_time"],
-        data["care_level"],
-        user_id
-    ))
+        cursor.execute("""
+            UPDATE users
+            SET name=?, city=?, watering_time=?, care_level=?
+            WHERE id=?
+        """, (
+            data.get("name"),
+            data.get("city"),
+            data.get("watering_time"),
+            data.get("care_level"),
+            user_id
+        ))
 
-    conn.commit()
-    conn.close()
+        conn.commit()
+        conn.close()
 
-    return {"message": "User updated successfully"}
+        return {"message": "User updated successfully"}
+
+    except Exception as e:
+        print("Update user error:", e)
+        return {"error": "Update failed"}
