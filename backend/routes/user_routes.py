@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from database.db import get_connection
+from backend.database.db import get_connection
 from passlib.hash import bcrypt
 
 router = APIRouter()

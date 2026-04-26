@@ -5,7 +5,6 @@ from backend.routes import plant_routes, user_routes, recommendation_routes
 from dotenv import load_dotenv
 
 load_dotenv() 
-print("🚀 API KEY:", os.getenv("WEATHER_API_KEY"))
 
 app = FastAPI()
 

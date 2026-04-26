@@ -1,4 +1,4 @@
-from database.db import get_connection
+from backend.database.db import get_connection
 from backend.services.weather_service import get_weather
 
 def get_recommendations(user_id):

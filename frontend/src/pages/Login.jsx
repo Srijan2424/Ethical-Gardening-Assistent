@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "../styles/styles.css";   // ✅ FIXED PATH
 
 export default function Login() {
   const [step, setStep] = useState("email");
@@ -11,8 +12,6 @@ export default function Login() {
 
   const handleEmail = async () => {
     const res = await api.checkUser(email);
-
-    console.log("Check user:", res);
 
     if (res.exists) {
       setStep("login");
@@ -38,27 +37,30 @@ export default function Login() {
       <div className="login-card">
 
         <h2>🌱 Gardening App</h2>
+        <p className="subtext">Welcome! Enter your email to continue</p>
 
         {step === "email" && (
-          <>
+          <div className="form-group">
+            <label>Email</label>
             <input
-              placeholder="Enter Email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <button onClick={handleEmail}>Continue</button>
-          </>
+          </div>
         )}
 
         {step === "login" && (
-          <>
+          <div className="form-group">
+            <label>Password</label>
             <input
               type="password"
-              placeholder="Enter Password"
+              placeholder="Enter your password"
               onChange={(e) => setPassword(e.target.value)}
             />
             <button onClick={handleLogin}>Login</button>
-          </>
+          </div>
         )}
 
       </div>

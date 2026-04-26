@@ -1,4 +1,4 @@
-from database.db import get_connection
+from backend.database.db import get_connection
 
 def get_all_plants():
     conn = get_connection()
