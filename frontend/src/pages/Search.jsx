@@ -43,13 +43,16 @@ export default function Search() {
     <div>
       <h1>Search Plants 🌿</h1>
 
-      <input
-        placeholder="Search plants..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
-
-      <button onClick={handleSearch}>Search</button>
+      <div className="search-container">
+        <div className="search-box">
+          <input
+            placeholder="Search plants..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <button onClick={handleSearch}>Search</button>
+        </div>
+      </div>
 
       <div className="plant-grid">
         {plants.map((plant) => (
@@ -67,8 +70,11 @@ export default function Search() {
             <h3>{plant.name}</h3>
             <p>{plant.description}</p>
 
-            <button onClick={() => handleAddPlant(plant.id)}>
-              Add to Garden
+            <button
+              className="add-btn"
+              onClick={() => api.addPlant(userId, plant.id)}
+            >
+              + Add to Garden
             </button>
 
           </div>

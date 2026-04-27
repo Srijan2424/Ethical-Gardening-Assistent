@@ -100,11 +100,12 @@ body {
 
 /* ===== BASE CARD ===== */
 .card {
+  background: #f9fbf9;
   border-radius: 18px;
-  padding: 20px;
-  background: white;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
-  transition: 0.2s;
+  padding: 25px;
+  margin-bottom: 20px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .card:hover {
@@ -208,7 +209,7 @@ body {
   flex: 1;
   padding: 12px;
   border-radius: 14px;
-  background: #f4f6f5;
+  background: #f4f6f5!important;
   text-align: center;
   transition: 0.2s;
 }
@@ -217,6 +218,7 @@ body {
   transform: translateY(-3px);
   background: white;
 }
+
 
 /* ===== RECOMMENDATIONS ===== */
 .recommendations-card {
@@ -228,25 +230,71 @@ body {
   justify-content: space-between;
   align-items: center;
 
-  padding: 14px;
-  border-radius: 14px;
-  background: #f7f9f8;
-  margin-top: 10px;
-  transition: 0.2s;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 15px 0;
+
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .recommendation-card:hover {
   transform: translateY(-3px);
-  background: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.recommendation-card h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+  color: #1b4332;
 }
 
+.recommendation-card p {
+  font-size: 14px;
+  color: #555;
+}
+
+/* 🌱 Recommendation card layout */
+.recommendation-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 20px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  background: #f9fafb;
+}
+
+/* 🟢 ADD BUTTON */
 .add-btn {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background: #2d6a4f;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
   color: white;
   border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.add-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+}
+
+/* ✅ ADDED BUTTON (SUCCESS STATE) */
+.added-btn {
+  background: #c8e6c9;
+  color: #2e7d32;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+
+  cursor: default;
 }
 
 /* ===== PLANTS ===== */
@@ -283,7 +331,19 @@ body {
   }
 
   .forecast-row {
-    overflow-x: auto;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+  }
+
+  .forecast-row div {
+    text-align: center;
+    background: #ffffff;
+    padding: 10px;
+    border-radius: 10px;
+    width: 60px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   }
 }
 /* ============================= */
@@ -358,3 +418,218 @@ body {
 .login-card button:hover {
   background: #1b4332;
 }
+/* PAGE */
+.profile-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 40px;
+}
+
+/* CARD */
+.profile-card {
+  background: white;
+  padding: 40px;
+  border-radius: 16px;
+  width: 500px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+/* TITLE */
+.profile-card h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+/* FORM GROUP */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* INPUTS */
+.form-group input,
+.form-group select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* BUTTON */
+.primary-btn {
+  margin-top: 25px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #2e7d32;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  background: #1b5e20;
+}
+/* ===== REMOVE BUTTON ===== */
+.remove-btn {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #e53935;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.remove-btn:hover {
+  background: #b71c1c;
+}
+/* ===== SEARCH BAR UPGRADE ===== */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin: 25px 0;
+}
+
+.search-box {
+  display: flex;
+  width: 420px;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.search-box input {
+  flex: 1;
+  padding: 12px 14px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-box button {
+  padding: 0 18px;
+  border: none;
+  background: #2d6a4f;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.search-box button:hover {
+  background: #1b4332;
+}
+/* COMMUNITY */
+.community-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.community-card textarea {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.posts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post-card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.post-user {
+  font-weight: bold;
+  color: #2d6a4f;
+}
+
+.post-content {
+  margin: 10px 0;
+}
+
+.post-actions button {
+  background: #e9f5ec;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #666;
+}
+
+.post-user {
+  font-weight: bold;
+  color: #2d6a4f;
+}
+
+.post-time {
+  font-size: 12px;
+}
+/* 🌍 COMMUNITY WIDGET */
+.community-widget-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.community-widget-item strong {
+  display: block;
+  font-size: 14px;
+  color: #2d6a4f;
+}
+
+.community-widget-item p {
+  margin: 5px 0;
+  font-size: 13px;
+  color: #333;
+}
+
+.community-meta {
+  font-size: 11px;
+  color: #888;
+}
+.carbon-card {
+  background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+  text-align: center;
+}
+
+.carbon-score {
+  font-size: 48px;
+  font-weight: bold;
+  color: #2e7d32;
+}
+

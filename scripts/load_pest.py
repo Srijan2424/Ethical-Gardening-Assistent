@@ -4,12 +4,12 @@ import json
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from database.db import get_connection
+from backend.database.db import get_connection
 
 conn = get_connection()
 cursor = conn.cursor()
 
-file_path = os.path.join("database", "pests.json")
+file_path = os.path.join("backend/database", "pests.json")
 
 with open(file_path) as f:
     data = json.load(f)

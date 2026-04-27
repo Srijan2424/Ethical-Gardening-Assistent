@@ -30,7 +30,7 @@ for plant, pests in grouped.items():
     })
 
 # Save JSON
-with open("database/pests.json", "w") as f:
+with open("backend/database/pests.json", "w") as f:
     json.dump(result, f, indent=2)
 
 print("✅ pests.json created from CSV!")

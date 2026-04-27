@@ -7,8 +7,13 @@ export default function Dashboard() {
   const [userPlants, setUserPlants] = useState([]);
   const [plantStatus, setPlantStatus] = useState({});
   const [currentTime, setCurrentTime] = useState(new Date());
-  const navigate = useNavigate();
+  const [communityPosts, setCommunityPosts] = useState([]);
 
+  const [carbonScore, setCarbonScore] = useState(
+    Number(localStorage.getItem("carbon_score")) || 0
+  );
+
+  const navigate = useNavigate();
   const userId = localStorage.getItem("user_id");
 
   // ⏰ CLOCK
@@ -17,55 +22,57 @@ export default function Dashboard() {
     return () => clearInterval(timer);
   }, []);
 
-  // 📡 FETCH
+  // 📡 FETCH DATA
   useEffect(() => {
-  api.getRecommendations(userId)
-      .then(res => {
-        console.log("🔥 FULL API RESPONSE:", res);
-        console.log("🌦 WEATHER:", res.weather);
-        console.log("📅 FORECAST:", res.forecast);
-        setData(res);
-      })
-      .catch(err => console.error("❌ API ERROR:", err));
+    api.getRecommendations(userId)
+      .then(res => setData(res || {}))
+      .catch(() => setData({}));
+  }, [userId]);
+
+  useEffect(() => {
+    api.getUserPlants(userId)
+      .then(res => setUserPlants(Array.isArray(res) ? res : []))
+      .catch(() => setUserPlants([]));
+  }, [userId]);
+
+  useEffect(() => {
+    api.getPosts()
+      .then(res => setCommunityPosts(Array.isArray(res) ? res : []))
+      .catch(() => setCommunityPosts([]));
   }, []);
 
-  // 🌤 ICONS
-  const getWeatherIcon = (c) => {
-    if (!c) return "🌤";
-    if (c.includes("Cloud")) return "☁️";
-    if (c.includes("Rain")) return "🌧";
-    if (c.includes("Clear")) return "☀️";
-    return "🌤";
-  };
-  // adding the plant to the garden from recommentations
+  // 🌱 ADD PLANT
   const handleAddPlant = (plantId) => {
-    api.addPlant(userId, plantId)
-      .then(() => {
-        alert("Added to your garden 🌱");
-      })
-      .catch(() => {
-        alert("Failed to add plant");
-      });
+    api.addPlant({
+      user_id: userId,
+      plant_id: plantId
+    })
+      .then(() => api.getUserPlants(userId))
+      .then(res => setUserPlants(res));
   };
 
-  // 🌱 WINDOW
+  // 🌿 WATER WINDOW
   const getWindow = (t) =>
     t === "morning" ? { start: 6, end: 14 } : { start: 16, end: 22 };
 
   const inWindow = () => {
+    if (!data?.user_watering_time) return false;
     const h = currentTime.getHours();
     const { start, end } = getWindow(data.user_watering_time);
     return h >= start && h < end;
   };
 
-  const formatHour = (h) => {
-    const suffix = h >= 12 ? "PM" : "AM";
-    return `${h % 12 || 12} ${suffix}`;
+  const formatWindow = (t) => {
+    if (!t) return "Not set";
+    if (t === "morning") return "6 AM – 2 PM";
+    if (t === "evening") return "4 PM – 10 PM";
+    return t;
   };
 
-  // ✅ DONE
+  // ✅ DONE + CARBON
   const handleDone = (id) => {
     const { start } = getWindow(data.user_watering_time);
+
     const next = new Date();
     next.setDate(next.getDate() + 1);
     next.setHours(start, 0, 0);
@@ -74,9 +81,14 @@ export default function Dashboard() {
       ...p,
       [id]: { completed: true, nextTime: next }
     }));
+
+    setCarbonScore(prev => {
+      const updated = prev + 1;
+      localStorage.setItem("carbon_score", updated);
+      return updated;
+    });
   };
 
-  // ⏳ SNOOZE
   const handleSnooze = (id) => {
     const snoozeUntil = new Date(Date.now() + 5 * 60 * 1000);
 
@@ -91,7 +103,7 @@ export default function Dashboard() {
   return (
     <div>
 
-      {/* 🔝 HEADER */}
+      {/* HEADER */}
       <div className="top-header">
         <h2 className="app-title">🌿 Gardening Assistant</h2>
 
@@ -102,33 +114,30 @@ export default function Dashboard() {
       </div>
 
       <h1 className="welcome-text">
-        Welcome back, {data.name} 🌱
+        Welcome back, {data?.name || "User"} 🍃
       </h1>
 
+      {/* GRID */}
       <div className="dashboard-grid">
 
-        {/* 🌦 WEATHER */}
-        <div className="card weather-card apple-glass">
-          <h2>{data.city}</h2>
-
-          <h1 className="temp-big">
-            {data.weather.temperature ?? "--"}°
-          </h1>
-
-          <p>{data.weather.condition}</p>
-
-          <div className="weather-row">
-            <span>💧 {data.weather.humidity}%</span>
-          </div>
+        {/* WEATHER */}
+        <div className="card weather-card">
+          <h2>{data?.city}</h2>
+          <h1>{data?.weather?.temperature ?? "--"}°</h1>
+          <p>{data?.weather?.condition}</p>
+          <span>💧 {data?.weather?.humidity ?? "--"}%</span>
         </div>
 
-        {/* 🔔 REMINDERS */}
-        <div className="card apple-glass">
-          <h2>Active Reminders</h2>
+        {/* 🌍 CARBON CARD */}
+        <div className="card carbon-card">
+          <h2>🌍 Carbon Index</h2>
+          <h1 className="carbon-score">{carbonScore}</h1>
+          <p>+1 credit per watering 🌱</p>
+        </div>
 
-          {userPlants.length === 0 && (
-            <p className="empty-text">No plants in your garden 🌱</p>
-          )}
+        {/* REMINDERS */}
+        <div className="card">
+          <h2>Active Reminders</h2>
 
           {userPlants.map((plant) => {
             const status = plantStatus[plant.id] || {};
@@ -137,21 +146,15 @@ export default function Dashboard() {
 
             return (
               <div key={plant.id} className="reminder-item">
-
                 <div>
-                  <p className="reminder-title">💧 {plant.name}</p>
-                  <p className="reminder-sub">
-                    {inWindow()
-                      ? "Water now"
-                      : `Window: ${formatHour(6)} – ${formatHour(14)}`}
-                  </p>
+                  <p>Water {plant.name}</p>
+                  <small>⏱ {formatWindow(data?.user_watering_time)}</small>
                 </div>
 
-                <div className="reminder-actions">
+                <div>
                   {!status.completed && !snoozed && (
                     <>
                       <button
-                        className="done-btn"
                         disabled={!inWindow()}
                         onClick={() => handleDone(plant.id)}
                       >
@@ -159,70 +162,73 @@ export default function Dashboard() {
                       </button>
 
                       {inWindow() && (
-                        <button
-                          className="snooze-btn"
-                          onClick={() => handleSnooze(plant.id)}
-                        >
+                        <button onClick={() => handleSnooze(plant.id)}>
                           Snooze
                         </button>
                       )}
                     </>
                   )}
                 </div>
-
-                {snoozed && (
-                  <p className="countdown">
-                    ⏳ {Math.floor((status.snoozeUntil - currentTime) / 60000)}m
-                  </p>
-                )}
-
-                {status.completed && (
-                  <p className="success">
-                    🌱 Next: {status.nextTime?.toLocaleTimeString()}
-                  </p>
-                )}
-
               </div>
             );
           })}
         </div>
+
+        {/* 🌍 COMMUNITY (SMALL WIDGET) */}
+        <div className="card community-card">
+          <h3>🌍 Community</h3>
+
+          {communityPosts.slice(0, 3).map(post => (
+            <div key={post.id} className="community-widget-item">
+              <strong>{post.name}</strong>
+              <p>{post.content.slice(0, 40)}...</p>
+            </div>
+          ))}
+        </div>
+
       </div>
 
-      {/* 📅 FORECAST */}
-      <div className="card apple-glass">
+      {/* FORECAST */}
+      <div className="card">
         <h2>Weekly Weather</h2>
-
         <div className="forecast-row">
-          {data.forecast.map((d, i) => (
+          {data?.forecast?.map((d, i) => (
             <div key={i} className="forecast-pill">
-              <p>{new Date(d.day).toLocaleDateString("en-US",{weekday:"short"})}</p>
-              <p>{getWeatherIcon(d.condition)}</p>
-              <p>{Math.round(d.temp)}°</p>
+              <p className="day">
+                {new Date(d.day).toLocaleDateString("en-US", { weekday: "short" })}
+              </p>
+
+              <p className="temp">
+                {Math.round(d.temp)}°
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* 🌱 RECOMMENDATIONS */}
-      <div className="card recommendations-card">
+      {/* RECOMMENDATIONS */}
+      <div className="card">
         <h2>Recommended Plants</h2>
 
-        {data.recommendations.map((rec, i) => (
+        {data?.recommendations?.map((rec, i) => (
           <div key={i} className="recommendation-card">
-
             <div>
               <h3>{rec.plant}</h3>
               <p>{rec.advice}</p>
             </div>
 
-            {/* ✅ ADD BUTTON FIXED */}
             <button
-              className="add-btn"
+              className={
+                userPlants.some(p => p.id === rec.plant_id)
+                  ? "added-btn"
+                  : "add-btn"
+              }
               onClick={() => handleAddPlant(rec.plant_id)}
             >
-              +
+              {userPlants.some(p => p.id === rec.plant_id)
+                ? "Added"
+                : "+ Add"}
             </button>
-
           </div>
         ))}
       </div>

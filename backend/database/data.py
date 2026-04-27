@@ -87,7 +87,7 @@ for plant in unique_plants:
         "rainfall_range": f"{rainfall_min}-{rainfall_max}"
     })
 
-with open("/Users/srijanchopra/Desktop/Coding/college projects/Software Engineering Project New/ethical_gardening_assistent/database/plants.json", "w") as f:
+with open("/Users/srijanchopra/Desktop/Coding/college projects/Software Engineering Project New/ethical_gardening_assistent/backend/inidatabase/plants.json", "w") as f:
     json.dump(plants, f, indent=2)
 
 print("plants.json created with region info!")
