@@ -1,6 +1,6 @@
 # 🌱 GardenMate — Sustainable Gardening Companion
 
-A full-stack intelligent gardening assistant that combines **AI-driven recommendations, weather intelligence, reminders, community interaction, and sustainability tracking** to help users grow plants efficiently and responsibly.
+A full-stack intelligent gardening assistant that combines **Intelligent recommendations, weather intelligence, reminders, community interaction, and sustainability tracking** to help users grow plants efficiently and responsibly.
 
 ---
 
