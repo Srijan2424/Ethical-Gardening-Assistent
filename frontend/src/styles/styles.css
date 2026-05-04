@@ -167,25 +167,42 @@ body {
 
 .reminder-actions {
   display: flex;
-  gap: 6px;
+  gap: 25px;
 }
 
 .done-btn {
-  background: #34c759;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
   color: white;
   border: none;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  margin-right: 10px;
   cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+.done-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 .snooze-btn {
-  background: transparent;
-  border: 1px solid #2d6a4f;
-  color: #2d6a4f;
-  padding: 6px 10px;
-  border-radius: 8px;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+.snooze-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
 }
 
 .countdown,

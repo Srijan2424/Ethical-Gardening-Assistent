@@ -88,6 +88,12 @@ export default function Dashboard() {
       return updated;
     });
   };
+  useEffect(() => {
+    if (userId) {
+      localStorage.setItem("carbon_score", 0);
+      setCarbonScore(0);
+    }
+  }, [userId]);
 
   const handleSnooze = (id) => {
     const snoozeUntil = new Date(Date.now() + 5 * 60 * 1000);
@@ -155,6 +161,7 @@ export default function Dashboard() {
                   {!status.completed && !snoozed && (
                     <>
                       <button
+                        class="done-btn"
                         disabled={!inWindow()}
                         onClick={() => handleDone(plant.id)}
                       >
@@ -162,7 +169,7 @@ export default function Dashboard() {
                       </button>
 
                       {inWindow() && (
-                        <button onClick={() => handleSnooze(plant.id)}>
+                        <button class="snooze-btn" onClick={() => handleSnooze(plant.id)}>
                           Snooze
                         </button>
                       )}

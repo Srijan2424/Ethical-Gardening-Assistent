@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from backend.database.db import get_connection
-from passlib.hash import bcrypt
+import bcrypt
 
 router = APIRouter()
 
@@ -42,7 +42,8 @@ def register(data: dict):
     conn = get_connection()
     cursor = conn.cursor()
 
-    hashed_password = bcrypt.hash(data["password"])
+    password = data["password"].encode()[:72]
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt()).decode()
 
     cursor.execute("""
         INSERT INTO users (name, email, password, city, watering_time, care_level)
