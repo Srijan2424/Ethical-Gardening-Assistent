@@ -6,11 +6,7 @@ A full-stack intelligent gardening assistant that combines **AI-driven recommend
 
 # 🚀 Deployment
 
-⚠️ If deployed:
-Frontend: https://your-frontend-url.com  
-Backend API: https://your-backend-url.com  
-
-⚠️ If not deployed, follow local setup below.
+Follow local setup below.
 
 ---
 
